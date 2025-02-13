@@ -1,31 +1,48 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import Header from '../components/Header'
+import axios from 'axios'
+import AuthContext from '../contexts/AuthContext'
 
 export default function Today() {
+  const [items, setItems] = useState([])
+  const { token } = useContext(AuthContext)
 
-  const url = "https://conteudo.imguol.com.br/c/entretenimento/d8/2017/09/27/bob-esponja-1506562776988_v2_4x3.jpg"
+  useEffect(() => {
+    const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today"
 
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+
+
+    axios.get(url, config)
+      .then(res => setItems(res.data))
+      .catch(err => console.log(err.response.data))
+  }, [])
 
 
   return (
     <Container>
-      <Header>
-        <h1>TrackIt</h1>
-        <img src={url} alt="Photo" />
-      </Header>
+      <Header />
       <Body>
         <Title>Segunda, 17/05</Title>
-        <HabitItem>
-          <HabitInfo>
-            <h2>Ler 1 capítulo de livro</h2>
-            <p>Sequência atual: 3 dias</p>
-            <p>Seu recorde: 5 dias</p>
-          </HabitInfo>
-          <Button>
-            <ion-icon name="checkmark-outline"></ion-icon>
-          </Button>
-        </HabitItem>
+        {items.map(todayList => (
+          <HabitItem key={todayList.id}>
+            <HabitInfo>
+              <h2>{todayList.name}</h2>
+              <p>Sequência atual: {todayList.currentSequence} dias</p>
+              <p>Seu recorde: {todayList.highestSequence} dias</p>
+            </HabitInfo>
+            <Button>
+              <ion-icon name="checkmark-outline"></ion-icon>
+            </Button>
+          </HabitItem>
+            )
+          )}
       </Body>
       <Footer>
         <Habit to='/habitos'>
@@ -45,38 +62,15 @@ export default function Today() {
 
 const Container = styled.div`
   font-family: "Lexend Deca", serif;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   background-color: #F2F2F2;
-  margin-bottom: 10px;
+  margin-bottom: 70px;
   `
-
-const Header = styled.div`
-  height: 70px;
-  width: 100vw;
-  background-color: #126BA5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-
-h1 {
-  font-family: "Playball", serif;
-  font-size: 40px;
-  color: white;
-  margin-left: 20px;
-}
-
-img {
-  height: 51px;
-  width: 51px;
-  border-radius: 100px;
-  margin-right: 20px;
-}
-`
 
 const Body = styled.div`
   padding: 20px;
+  margin-top: 70px;
 `
 
 const Title = styled.h2`
@@ -100,13 +94,13 @@ const HabitInfo = styled.div`
 
 `
 
-
 const HabitItem = styled.div`
   background-color: white;
   padding: 15px;
   display: flex;
   justify-content: space-between;
   border-radius: 5px;
+  margin-bottom: 8px;
 `
 
 const Button = styled.div`

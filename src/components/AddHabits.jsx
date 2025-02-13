@@ -1,11 +1,49 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import AuthContext from '../contexts/AuthContext'
 
-export default function AddHabits() {
+export default function AddHabits({ setClick }) {
+    const [nameHabit, setNameHabit] = useState("")
+    const { token } = useContext(AuthContext)
+
+
+
+    function sendHabit() {
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const body = {
+            name: nameHabit,
+            days: [1, 3, 4, 5]
+        }
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+        axios.post(url, body, config)
+            .then()
+            .catch(err => console.log(err.response.data))
+        
+            setClick(null)
+
+
+    }
+
+    function sendCancel() {
+        setClick(null)
+    }
+
     return (
         <Container>
-            <input type="text" placeholder='nome do hábito' />
+            <input
+                type="text"
+                placeholder='nome do hábito'
+                value={nameHabit}
+                onChange={e => setNameHabit(e.target.value)}
+            />
             <Days>
                 <Day>D</Day>
                 <Day>S</Day>
@@ -16,8 +54,8 @@ export default function AddHabits() {
                 <Day>S</Day>
             </Days>
             <Footer>
-                <Cancel>Cancelar</Cancel>
-                <Send>Salvar</Send>
+                <Cancel onClick={sendCancel}>Cancelar</Cancel>
+                <Send onClick={sendHabit}>Salvar</Send>
             </Footer>
         </Container>
     )

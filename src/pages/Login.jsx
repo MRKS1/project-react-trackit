@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Logo from '../assets/logo_trackit_login.svg'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import UserContext from '../contexts/UserContext'
+import AuthContext from '../contexts/AuthContext'
 
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const { setUser, setUrl } = useContext(UserContext)
+  const { setToken } = useContext(AuthContext)
 
 
   function sendLogin(e) {
@@ -17,11 +21,15 @@ export default function Login() {
 
 
     axios.post(url, body)
-    .then(res => {
-      console.log(res.data)
-      navigate("/habitos")
-    })
-    .catch(err => console.log(err.response.data))
+      .then(res => {
+        setUser(res.data)
+        setUrl(res.data.image)
+        setToken(res.data.token)
+        localStorage.setItem("token", res.data.token)
+        localStorage.setItem("image", res.data.image)
+        navigate("/habitos")
+      })
+      .catch()
   }
 
 

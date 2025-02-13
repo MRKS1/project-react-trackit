@@ -1,30 +1,65 @@
-import React from 'react'
+import axios from 'axios'
+import React, { useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import AuthContext from '../contexts/AuthContext'
 
-export default function HabitList() {
+export default function HabitList({ setCount }) {
+    const [item, setItem] = useState([])
+    const { token } = useContext(AuthContext)
+
+
+    useEffect(() => {
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+
+
+        axios.get(url, config)
+            .then(res => {
+                setItem(res.data)
+                setCount(res.data.length)
+            })
+            .catch(err => console.log(err.response.data))
+
+    }, [])
+
+
+
+
     return (
         <Container>
-            <h2>Ler 1 capítulo de livro</h2>
-            <Days>
-                <Day>D</Day>
-                <Day>S</Day>
-                <Day>T</Day>
-                <Day>Q</Day>
-                <Day>Q</Day>
-                <Day>S</Day>
-                <Day>S</Day>
-            </Days>
+            {item.map(habit => (
+                <HabitBox key={habit.id}>
+                    <h2>{habit.name}</h2>
+                    <Days>
+                        <Day>D</Day>
+                        <Day>S</Day>
+                        <Day>T</Day>
+                        <Day>Q</Day>
+                        <Day>Q</Day>
+                        <Day>S</Day>
+                        <Day>S</Day>
+                    </Days>
+                </HabitBox>
+            ))
+            }
         </Container>
-
     )
 }
 
-
 const Container = styled.div`
+        margin-bottom: 80px;
+`
+
+const HabitBox = styled.div`
     font-family: "Lexend Deca", serif;
     background-color: white;
     border-radius: 5px;
-    margin-bottom: 30px;
+    margin-bottom: 8px;
     padding: 20px;
 
     h2 {

@@ -1,27 +1,39 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import AddHabits from '../components/AddHabits'
 import HabitList from '../components/HabitList'
+import Header from '../components/Header'
+import AuthContext from '../contexts/AuthContext'
 
 export default function Habits() {
-  const url = "https://conteudo.imguol.com.br/c/entretenimento/d8/2017/09/27/bob-esponja-1506562776988_v2_4x3.jpg"
+  const [count, setCount] = useState(null)
+  const [click, setClick] = useState(null)
+
+  const {token} = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/")
+    }
+  }, [])
+
+function clicked() {
+  setClick([1])
+}
 
   return (
     <Container>
-      <Header>
-        <h1>TrackIt</h1>
-        <img src={url} alt="Photo" />
-      </Header>
+      <Header />
       <Body>
-      <Title>
-        <h2>Meus hábitos</h2>
-        <AddButton>+</AddButton>
-      </Title>
-        {/* ALTERAR QUANDO NECESSARIO */}
-        {/* <HabitList /> */}
-        {/* <AddHabits /> */}
-        <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+        <Title>
+          <h2>Meus hábitos</h2>
+          <AddButton onClick={clicked}>+</AddButton>
+        </Title>
+        {click && <AddHabits setClick={setClick} />}
+        {count === 0 && <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>}
+        <HabitList setCount={setCount}/>
       </Body>
       <Footer>
         <Habit to='/habitos'>
@@ -38,35 +50,10 @@ export default function Habits() {
 }
 
 const Container = styled.div`
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   background-color: #F2F2F2;
 `
-
-const Header = styled.div`
-height: 70px;
-width: 100vw;
-background-color: #126BA5;
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 15px;
-
-h1 {
-  font-family: "Playball", serif;
-  font-size: 40px;
-  color: white;
-  margin-left: 20px;
-}
-
-img {
-  height: 51px;
-  width: 51px;
-  border-radius: 100px;
-  margin-right: 20px;
-}
-`
-
 
 const Title = styled.div`
     display: flex;
@@ -95,6 +82,7 @@ const AddButton = styled.div`
 
 const Body = styled.div`
     padding: 20px;
+    margin-top: 70px;
 
     p {
     font-family: "Lexend Deca", serif;
