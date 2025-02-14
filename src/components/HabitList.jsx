@@ -57,6 +57,7 @@ export default function HabitList({ setCount, item, setItem }) {
     )
 }
 
+
 const Container = styled.div`
     margin-bottom: 80px;
 `

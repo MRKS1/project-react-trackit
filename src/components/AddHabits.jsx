@@ -181,5 +181,5 @@ const Send = styled.button`
 
         &:hover {
             cursor: pointer;
-        }
+    }
 `
