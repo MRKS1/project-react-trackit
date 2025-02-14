@@ -53,7 +53,7 @@ export default function Form() {
           required
           />
         <input type="text"
-          placeholder='foto'
+          placeholder='url da foto'
           value={image}
           onChange={(e) => setImage(e.target.value)} 
           disabled={loading}
