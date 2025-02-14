@@ -5,23 +5,27 @@ import AddHabits from '../components/AddHabits'
 import HabitList from '../components/HabitList'
 import Header from '../components/Header'
 import AuthContext from '../contexts/AuthContext'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+
 
 export default function Habits() {
-  const [count, setCount] = useState(null)
-  const [click, setClick] = useState(null)
-
-  const {token} = useContext(AuthContext)
-  const navigate = useNavigate()
+  const [item, setItem] = useState([]);
+  const [count, setCount] = useState(null);
+  const [click, setClick] = useState(null);
+  const { token } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
       navigate("/")
     }
-  }, [])
+  }, []);
 
-function clicked() {
-  setClick([1])
-}
+  function clicked() {
+    setClick([1])
+  };
 
   return (
     <Container>
@@ -29,19 +33,26 @@ function clicked() {
       <Body>
         <Title>
           <h2>Meus hábitos</h2>
-          <AddButton onClick={clicked}>+</AddButton>
+          <AddBoxIcon
+            onClick={clicked}
+            sx={{ 
+              color: '#52B6FF', 
+              fontSize: '45px', 
+              cursor: 'pointer'
+            }}
+          />
         </Title>
-        {click && <AddHabits setClick={setClick} />}
+        {click && <AddHabits setCount={setCount} setClick={setClick} item={item} setItem={setItem} />}
         {count === 0 && <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>}
-        <HabitList setCount={setCount}/>
+        <HabitList setCount={setCount} item={item} setItem={setItem} />
       </Body>
       <Footer>
         <Habit to='/habitos'>
-          <ion-icon name="calendar-outline"></ion-icon>
+          <CalendarMonthIcon />
           <p>Hábitos</p>
         </Habit>
         <Day to='/hoje'>
-          <ion-icon name="calendar-outline"></ion-icon>
+          <EventAvailableIcon />
           <p>Hoje</p>
         </Day>
       </Footer>
@@ -67,18 +78,6 @@ const Title = styled.div`
         font-size: 23px;
     }
 `
-const AddButton = styled.div`
-    height: 35px;
-    width: 40px;
-    background-color: #52B6FF;
-    font-size: 27px;
-    color: white;
-    border-radius: 4px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`
-
 
 const Body = styled.div`
     padding: 20px;
@@ -91,8 +90,6 @@ const Body = styled.div`
 
     }
 `
-
-
 
 const Footer = styled.div`
   height: 70px;
@@ -119,6 +116,7 @@ const Habit = styled(Link)`
     margin-left: 5px;
   }
 `
+
 const Day = styled(Link)`
   width: 50%;
   background-color: white;
@@ -128,9 +126,7 @@ const Day = styled(Link)`
   align-items: center;
   text-decoration: none;
 
-  
   p {
     margin-left: 5px;
   }
-
 `

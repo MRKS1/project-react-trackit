@@ -3,28 +3,29 @@ import Logo from '../assets/logo_trackit_login.svg'
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { CircularProgress } from '@mui/material'
 
 export default function Form() {
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [image, setImage] = useState("")
-  const [password, setPassword] = useState("")
-  const navigate = useNavigate()
-
-
-
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   function sendInfo(e) {
+    setLoading(true)
     e.preventDefault()
     const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up"
     const body = { email, name, image, password }
 
-
     axios.post(url, body)
-    .then(() => navigate("/"))
+    .then(() => {
+      navigate("/")
+      setLoading(false)
+  })
     .catch(err => console.log(err.response.data))
-  }
-
+  };
 
   return (
     <Container>
@@ -34,28 +35,32 @@ export default function Form() {
           placeholder='email'
           value={email}
           onChange={(e) => setEmail(e.target.value)} 
+          disabled={loading}
           required
           />       
         <input type="password"
           placeholder='senha'
           value={password}
           onChange={(e) => setPassword(e.target.value)} 
+          disabled={loading}
           required
           />        
         <input type="text"
           placeholder='nome'
           value={name}
           onChange={(e) => setName(e.target.value)} 
+          disabled={loading}
           required
           />
         <input type="text"
           placeholder='foto'
           value={image}
           onChange={(e) => setImage(e.target.value)} 
+          disabled={loading}
           required
           />        
-        <button type='submit'>Cadastrar</button>
-      </Fill>
+        <button type='submit'>{!loading ? "Cadastrar" : <CircularProgress color="white" size="30px" />}</button>
+        </Fill>
       <ToForm to="/">Já tem uma conta? Faça login!</ToForm>
     </Container>
   )
@@ -77,7 +82,6 @@ const Container = styled.div`
 const ToForm = styled(Link)`
   font-size: 18px;
   color: #52B6FF;
-
 `
 
 const Fill = styled.form`
@@ -112,5 +116,4 @@ const Fill = styled.form`
     border-radius: 5px;
     margin-bottom: 25px;
   }
-
 `

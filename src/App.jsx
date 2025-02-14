@@ -9,8 +9,8 @@ import AuthContext from './contexts/AuthContext'
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
-  const [user, setUser] = useState(null)
-  const [url, setUrl] = useState(localStorage.getItem("image"))
+  const [user, setUser] = useState(null);
+  const [url, setUrl] = useState(localStorage.getItem("image"));
   
 
   return (
@@ -27,9 +27,6 @@ function App() {
     </UserContext.Provider>
     </AuthContext.Provider>
   )
-}
-
-
-
+};
 
 export default App

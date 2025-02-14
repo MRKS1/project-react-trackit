@@ -4,53 +4,95 @@ import styled from 'styled-components'
 import Header from '../components/Header'
 import axios from 'axios'
 import AuthContext from '../contexts/AuthContext'
+import dayjs from 'dayjs'
+import 'dayjs/locale/pt-br'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import { CircularProgress } from '@mui/material'
 
 export default function Today() {
-  const [items, setItems] = useState([])
-  const { token } = useContext(AuthContext)
+  const [items, setItems] = useState([]);
+  const [count, setCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { token } = useContext(AuthContext);
+  const day = dayjs().format('dddd, D/MM');
+  const dayCorrected = day.charAt(0).toUpperCase() + day.slice(1);
+  const body = "";
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+  dayjs.locale('pt-br');
 
   useEffect(() => {
+    setLoading(true)
+    getItems()
+  }, []);
+
+  function getItems() {
     const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today"
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-
-
     axios.get(url, config)
-      .then(res => setItems(res.data))
-      .catch(err => console.log(err.response.data))
-  }, [])
+      .then(res => {
+        setItems(res.data)
+        setCount(res.data.length)
+        setLoading(false)
 
+      })
+      .catch(err => console.log(err.response.data))
+  };
+
+  function check(e) {
+    axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${e}/check`, body, config)
+      .then(() => getItems())
+      .catch(err => {
+        if (err.response.status === 400) {
+          axios.post(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${e}/uncheck`, body, config)
+            .then(() => getItems())
+            .catch()
+        }
+      })
+  }
 
   return (
     <Container>
       <Header />
       <Body>
-        <Title>Segunda, 17/05</Title>
-        {items.map(todayList => (
-          <HabitItem key={todayList.id}>
-            <HabitInfo>
-              <h2>{todayList.name}</h2>
-              <p>Sequência atual: {todayList.currentSequence} dias</p>
-              <p>Seu recorde: {todayList.highestSequence} dias</p>
-            </HabitInfo>
-            <Button>
-              <ion-icon name="checkmark-outline"></ion-icon>
-            </Button>
-          </HabitItem>
+        <Title>{dayCorrected}</Title>
+        {loading ?
+          <Loader>
+            <CircularProgress />
+          </Loader>
+          :
+          <div>
+            {count === 0 && <p>Você não tem nenhum hábito cadastrado hoje.</p>}
+            {items.map(todayList => (
+              <HabitItem key={todayList.id}>
+                <HabitInfo>
+                  <h2>{todayList.name}</h2>
+                  <p>Sequência atual: {todayList.currentSequence} dias</p>
+                  <p>Seu recorde: {todayList.highestSequence} dias</p>
+                </HabitInfo>
+                <Button>
+                  <CheckBoxIcon
+                    sx={{ color: todayList.done === false ? "#E7E7E7" : "#8FC549", fontSize: '90px' }}
+                    onClick={() => check(todayList.id)}
+                  />
+                </Button>
+              </HabitItem>
             )
-          )}
+            )}
+          </div>
+        }
       </Body>
       <Footer>
         <Habit to='/habitos'>
-          <ion-icon name="calendar-outline"></ion-icon>
+          <CalendarMonthIcon />
           <p>Hábitos</p>
         </Habit>
         <Day to='/hoje'>
-          <ion-icon name="calendar-outline"></ion-icon>
+          <EventAvailableIcon />
           <p>Hoje</p>
         </Day>
       </Footer>
@@ -58,7 +100,11 @@ export default function Today() {
   )
 }
 
-
+const Loader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 
 const Container = styled.div`
   font-family: "Lexend Deca", serif;
@@ -66,18 +112,24 @@ const Container = styled.div`
   width: 100vw;
   background-color: #F2F2F2;
   margin-bottom: 70px;
-  `
+`
 
 const Body = styled.div`
   padding: 20px;
   margin-top: 70px;
+
+  p {
+    font-family: "Lexend Deca", serif;
+    font-size: 18px;
+    color: #666666;
+    }
 `
 
 const Title = styled.h2`
   font-size: 23px;
   color: #126BA5;
   margin-bottom: 20px;
-
+  margin-top: 10px;
 `
 
 const HabitInfo = styled.div`
@@ -85,13 +137,14 @@ const HabitInfo = styled.div`
 
   h2 {
     font-size: 20px;
-    margin-bottom: 7px;
+    margin-top: 5px;
+    margin-bottom: 13px;
   }
 
   p {
     font-size: 13px;
+    margin-bottom: 5px;
   }
-
 `
 
 const HabitItem = styled.div`
@@ -106,13 +159,10 @@ const HabitItem = styled.div`
 const Button = styled.div`
   width: 70px;
   height: 70px;
-  background-color: #8FC549;
-  color: white;
-  font-size: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  cursor: pointer;
 `
 
 const Footer = styled.div`
@@ -140,6 +190,7 @@ const Habit = styled(Link)`
     margin-left: 5px;
   }
 `
+
 const Day = styled(Link)`
   width: 50%;
   background-color: #52B6FF;
@@ -148,11 +199,8 @@ const Day = styled(Link)`
   justify-content: center;
   align-items: center;
   text-decoration: none;
-
   
   p {
     margin-left: 5px;
   }
-
 `
-

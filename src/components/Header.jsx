@@ -3,10 +3,7 @@ import styled from 'styled-components'
 import UserContext from '../contexts/UserContext'
 
 export default function Header() {
-
-  const { user, url } = useContext(UserContext)
-
-
+  const { user, url } = useContext(UserContext);
 
   return (
     <Container>
