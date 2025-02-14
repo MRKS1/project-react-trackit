@@ -7,28 +7,24 @@ import HabitList from './HabitList'
 import { CircularProgress } from '@mui/material'
 
 export default function AddHabits({ setClick, item, setItem, setCount }) {
-    const [nameHabit, setNameHabit] = useState("")
-    const [loading, setLoading] = useState(false)
-    const { token } = useContext(AuthContext)
+    const [nameHabit, setNameHabit] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { token } = useContext(AuthContext);
     const [selection, setSelection] = useState([]);
-
-
-
 
     function sendHabit(e) {
         setLoading(true)
         e.preventDefault();
-        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits";
         const body = {
             name: nameHabit,
             days: selection
-        }
-
+        };
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        }
+        };
 
         axios.post(url, body, config)
             .then(res => {
@@ -39,15 +35,11 @@ export default function AddHabits({ setClick, item, setItem, setCount }) {
             })
             .catch(err => setLoading(false));
 
-
-
-
-
     }
 
     function sendCancel() {
         setClick(null)
-    }
+    };
 
     function selectDays(choice) {
         if (selection.includes(choice)) {
@@ -56,7 +48,7 @@ export default function AddHabits({ setClick, item, setItem, setCount }) {
         else {
             setSelection([...selection, choice]);
         }
-    }
+    };
 
 
     return (
@@ -159,8 +151,6 @@ const Day = styled.div`
             color: #DBDBDB;
         }
     }
-
-
 `
 
 const Footer = styled.div`
@@ -168,7 +158,6 @@ const Footer = styled.div`
     justify-content: end;
     align-items: center;
     margin-right: 18px;
-
 `
 
 const Cancel = styled(Link)`
@@ -176,7 +165,6 @@ const Cancel = styled(Link)`
     font-size: 18px;
     color: #52B6FF;
     text-decoration: none;
-
 `
 
 const Send = styled.button`
@@ -194,6 +182,4 @@ const Send = styled.button`
         &:hover {
             cursor: pointer;
         }
-
-
 `

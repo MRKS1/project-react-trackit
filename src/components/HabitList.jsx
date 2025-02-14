@@ -6,8 +6,8 @@ import { CircularProgress } from '@mui/material'
 
 
 export default function HabitList({ setCount, item, setItem }) {
-    const { token } = useContext(AuthContext)
-    const [loading, setLoading] = useState(true)
+    const { token } = useContext(AuthContext);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true)
